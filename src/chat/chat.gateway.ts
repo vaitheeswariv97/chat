@@ -39,13 +39,17 @@ export class ChatGateway
   }
   @SubscribeMessage('chat')
   async onChat(client, message) {
-    let chat_data: any = {};
-    chat_data.client_id = this.id;
-    chat_data.message = message;
-    let save_data = this.chat_store.save(chat_data);
-    //console.log(save_data);
-    client.broadcast.emit('chat', message);
-    //this.server.emit('chat', message);
-    //console.log('message:', message);
+    try {
+      //console.log(client.id);
+      let chat_data: any = {};
+      chat_data.client_id = client.id;
+      chat_data.message = message;
+      let save_data = this.chat_store.save(chat_data);
+      client.broadcast.emit('chat', message);
+      //this.server.emit('chat', message);
+      //console.log('message:', message);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
