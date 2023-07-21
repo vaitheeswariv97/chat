@@ -8,18 +8,26 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { ChatStoreService } from 'src/chat_store/chat_store.service';
+import { AppController } from 'src/app.controller';
 @WebSocketGateway({ cors: true })
 export class ChatGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
 {
   @WebSocketServer() server;
   users: number = 0;
-  id: string = '';
+  options = {
+    subject: 'mailto: <vaitheeswariv97@gmail.com>',
+    publicKey:
+      'BOT6rsWjAQ5ZXHdet5ffqhaiBIAIpjimlqgB1DKUdb4yU4vuIi_RojyKk5FwhD3MqsYId3QUknOatVfwE8dW99U',
+    privateKey: 'Qf7pXtvQOL6mmh0nCs_Tn4A9-ixHgbwPCxzcPxfhyLo',
+  };
   //private logger = new Logger('ChatGateway');
-  constructor(private chat_store: ChatStoreService) {}
+  constructor(
+    private chat_store: ChatStoreService,
+    private push: AppController,
+  ) {}
   async onModuleInit() {
     this.server.on('connection', (socket: any) => {
-      this.id = socket.id;
       console.log(socket.id);
     });
   }
@@ -45,6 +53,7 @@ export class ChatGateway
       chat_data.client_id = client.id;
       chat_data.message = message;
       let save_data = this.chat_store.save(chat_data);
+      this.push.sendNotification(message);
       client.broadcast.emit('chat', message);
       //this.server.emit('chat', message);
       //console.log('message:', message);

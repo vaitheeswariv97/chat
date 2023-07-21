@@ -23,6 +23,6 @@ require('dotenv').config();
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ChatGateway, ChatStoreService],
+  providers: [AppService, ChatGateway, ChatStoreService, AppController],
 })
 export class AppModule {}
